@@ -1,0 +1,34 @@
+syntax = "proto3";
+package protocol;
+
+service Tentacle {
+    rpc Register(RegisterRequest) returns (Empty) {}
+    rpc GetSubnets(Empty) returns (GetSubnetsResponse) {}
+    rpc Connect(ConnectRequest) returns (ConnectResponse) {}
+    rpc WaitForConnection(Empty) returns (stream ConnectResponse) {}
+}
+
+message Empty {}
+
+message RegisterRequest {
+    string local_port = 1;
+}
+
+message ConnectRequest {
+    string peer_ip = 1;
+}
+
+message ConnectResponse {
+    string peer_address = 1;
+}
+
+message GetSubnetsResponse {
+    message Subnet {
+        string name = 1;
+        string cidr = 2;
+        string ip = 3;
+        repeated string peer_ips = 4;
+    }
+
+    repeated Subnet subnets = 1;
+}

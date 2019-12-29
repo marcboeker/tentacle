@@ -1,0 +1,38 @@
+version: "3"
+services:
+  server:
+    command: "/bin/bash -c 'cd /app; go run cmd/server/main.go --listen :1337'"
+    image: "golang:latest"
+    ports:
+      - "1337:1337"
+
+    volumes:
+      - .:/app
+  node1:
+    command: "/bin/bash -c 'cd /app; go run cmd/client/main.go --token token_1 --certs-dir /app/certs/node_1'"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4001:4001"
+    privileged: true
+    volumes:
+      - .:/app
+    # environment:
+    #   - QUIC_GO_LOG_LEVEL=DEBUG
+    depends_on:
+      - "server"
+  node2:
+    command: "/bin/bash -c 'cd /app; go run cmd/client/main.go --token token_2 --certs-dir /app/certs/node_2'"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4002:4002"
+    privileged: true
+    volumes:
+      - .:/app
+    # environment:
+    #   - QUIC_GO_LOG_LEVEL=DEBUG
+    depends_on:
+      - "server"
